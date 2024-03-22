@@ -65,6 +65,7 @@ class TodoManager
         return $todos;
     }
 
+
     public function editTodo($id, $title, $description)
     {
         $stmt = $this->pdo->prepare("UPDATE todos SET title = ?, description = ? WHERE id = ?");
@@ -85,7 +86,7 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
-$todoManager = new TodoManager($pdo);
+$todoManager = new TodoManager($pdo, $isEdit);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["addTodo"])) {
@@ -136,25 +137,22 @@ $todos = $todoManager->getTodos();
             <ul id="todo-list">
                 <?php foreach ($todos as $todo) : ?>
                     <li class="todo-item">
-                        <?php if (!isset($_POST['edit_id']) || $_POST['edit_id'] != $task->getId()) : ?>
-                            <strong><?php echo $todo->getTitle(); ?></strong><br>
-                            <?php echo $todo->getDescription(); ?><br>
-                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                                <input type="hidden" name="edit_id" value="<?php echo $todo->getId(); ?>">
-                                <input type="submit" name="editTodo" value="Edit">
-                                <button type="button" onclick="confirmDelete(<?php echo $todo->getId(); ?>)">Delete</button>
-                            </form>
-                        <?php else : ?>
-                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                                <input type="hidden" name="edit_id" value="<?php echo $todo->getId(); ?>">
-                                <label for="editTitle">Title:</label><br>
-                                <input type="text" id="editTitle" name="title" value="<?php echo $todo->getTitle(); ?>" required><br>
-                                <label for="editDescription">Description:</label><br>
-                                <textarea id="editDescription" name="description" required><?php echo $todo->getDescription(); ?></textarea><br>
-                                <button type="submit" name="confirmEditTodo">Confirm Edit</button>
-                                <button type="button" onclick="cancelEdit()">Cancel</button>
-                            </form>
-                        <?php endif; ?>
+                        <strong><?php echo $todo->getTitle(); ?></strong><br>
+                        <?php echo $todo->getDescription(); ?><br>
+                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                            <input type="hidden" name="edit_id" value="<?php echo $todo->getId(); ?>">
+                            <input type="submit" name="editTodo" value="Edit">
+                            <button type="button" onclick="confirmDelete(<?php echo $todo->getId(); ?>)">Delete</button>
+                        </form>
+                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                            <input type="hidden" name="edit_id" value="<?php echo $todo->getId(); ?>">
+                            <label for="editTitle">Title:</label><br>
+                            <input type="text" id="editTitle" name="title" value="<?php echo $todo->getTitle(); ?>" required><br>
+                            <label for="editDescription">Description:</label><br>
+                            <textarea id="editDescription" name="description" required><?php echo $todo->getDescription(); ?></textarea><br>
+                            <button type="submit" name="confirmEditTodo">Confirm Edit</button>
+                            <button type="button" onclick="cancelEdit()">Cancel</button>
+                        </form>
                     </li>
                 <?php endforeach; ?>
             </ul>
